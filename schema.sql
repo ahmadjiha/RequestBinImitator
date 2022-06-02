@@ -12,7 +12,7 @@ CREATE TABLE bins (
 CREATE TABLE requests (
   id serial PRIMARY KEY,
   bin_id int NOT NULL,
-  ip_address varchar(30) NOT NULL,
+  ip_address varchar(50) NOT NULL,
   request_method varchar(20) NOT NULL,
   headers text NOT NULL,
   received_at timestamp, --NOT NULL,

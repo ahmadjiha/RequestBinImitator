@@ -1,0 +1,23 @@
+<h1>RequestBin</h1>
+<h2>Your Bin</h2>
+<input id="url" value={{ url }}>
+
+<ul class="requests">
+  {{#if requests}}
+    {{#each requests}}
+      <li>Request: {{this.id}}</li>
+        <ul>
+          <li>Headers:</li>
+              {{#each this.headers}}
+              <ul>
+                <li>{{@key}}: {{this}}</li>
+              </ul>
+              {{/each}}
+          <li>Payload: {{this.payLoad}} </li>
+        </ul>
+    {{/each}}
+    {{else}}
+    <p>Send some requests!</p>
+  {{/if}}
+</ul>
+

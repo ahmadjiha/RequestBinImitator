@@ -1,0 +1,2 @@
+INSERT INTO bins(url, date_created, date_last_used, request_count, active) VALUES('www.test.com', NOW(), NOW(), 0, true);
+INSERT INTO bins(url, date_created, date_last_used, request_count, active) VALUES('www.test2.com', NOW(), NOW(), 0, true);

@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 
-
+// Database connection
 const pgp = require('pg-promise')();
 
 const CONNECTION = {
@@ -15,15 +15,18 @@ const CONNECTION = {
 
 const db = pgp(CONNECTION);
 
+// Handle bars
+// https://github.com/ericf/express-handlebars
 const hbs = require('hbs');
+
+// Register handlebars view engine
+app.set('view engine', 'hbs')
+
+// Crypto for creating a random URL hash
 const crypto = require('crypto');
 
 
-// // Register handlebars view engine
-// app.engine('handlebars', hbs({defaultLayout: 'main'}));
-// Use Handlebars view engine
-app.set('view engine', 'hbs')
-
+// Main home page - displays all bins
 
 app.get('/', (request, response) => {
   db.any("SELECT * FROM bins")
@@ -31,6 +34,9 @@ app.get('/', (request, response) => {
       response.render('main', {bins: bins})
     )
 })
+
+// Display a bin resource
+// Note - handle cases where there are no requests yet.
 
 app.get('/bins/:binsUrl', (request, response) => {
   const binsUrl = request.params.binsUrl;
@@ -45,6 +51,8 @@ app.get('/bins/:binsUrl', (request, response) => {
     })
 })
 
+// Creates a new bin and redirects to the new bin
+
 app.post('/bins', (request, response) => {
   const urlHash = crypto.randomBytes(20).toString('hex');
 
@@ -55,8 +63,10 @@ app.post('/bins', (request, response) => {
 
 })
 
+
+// Capturing webhook requests into the bin
+
 app.post('/bins/:binsUrl', (request, response) => {
-  // I have to add a request to my database and
   const binsUrl = request.params.binsUrl;
 
   // console.log(binsUrl);

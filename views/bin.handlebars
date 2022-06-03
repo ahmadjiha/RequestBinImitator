@@ -5,7 +5,7 @@
     <p><b>Request Count: </b>{{ binData.request_count }}</p>
     <p><b>Created: </b>{{ binData.date_created }}</p>
     <p><b>Last: </b>{{ binData.date_last_used }}</p>
-    <p><b>Link:</b> <input value={{ url }}></p>
+    <p><b>Link:</b> <input type="text" value={{ url }}></p>
   </article>
 </div>
 
@@ -24,7 +24,7 @@
           </ul>
           {{/each}}
       <li><b>Raw Body: </b></li>
-      <li><input id="raw" value={{ this.payLoad }}></li>
+      <li><input type="text" id="raw" value='{{ this.payLoad }}'></li>
     </ul>
   </div>
   {{/each}}

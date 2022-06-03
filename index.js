@@ -34,16 +34,15 @@ app.post('/bin', async (req, res) => {
   const urlHash = crypto.randomBytes(20).toString('hex');
 
   let store = res.locals.store;
-  const url = '/bin/' + urlHash;
-  await store.createBin(url);
-  res.json(`/bin/view/${urlHash}`);
+  await store.createBin(urlHash);
+  const viewUrl = '/bin/view/' + urlHash;
+  res.json(viewUrl);
 });
 
 // View bin
 app.get('/bin/view/:id', async (req, res) => {
   let store = res.locals.store;
-  const url = req.originalUrl.slice(0, 5) + req.originalUrl.slice(10);
-  let binId = await store.getBinId(url);
+  const binId = await store.getBinId(req.params.id);
 
   if (!binId) {
     res.redirect('/');
@@ -53,9 +52,9 @@ app.get('/bin/view/:id', async (req, res) => {
     requests = parseRequests(requests, payLoads); // add payload to requests
     const binData = await store.loadBin(binId);
 
-    res.render('home-bin', {
+    res.render('bin', {
       title: 'Your Bins - RequestBinge',
-      url: req.headers.host + url,
+      url: req.headers.host + '/bin/' + req.params.id,
       requests,
       binData,
     });
@@ -65,7 +64,7 @@ app.get('/bin/view/:id', async (req, res) => {
 // Requests from webhook URL
 app.post('/bin/:id', async (req, res) => {
   const store = res.locals.store;
-  const binId = await store.getBinId(req.originalUrl);
+  const binId = await store.getBinId(req.params.id);
   const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const method = req.method;
   const payload = JSON.stringify(req.body) || '';
@@ -92,7 +91,7 @@ app.post('/bin/:id', async (req, res) => {
 
 app.get('/bin/:id', async (req, res) => {
   const store = res.locals.store;
-  const binId = await store.getBinId(req.originalUrl);
+  const binId = await store.getBinId(req.params.id);
   const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   const method = req.method;
   const payload = JSON.stringify(req.body) || '';

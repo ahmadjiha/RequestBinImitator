@@ -13,6 +13,9 @@ const CONNECTION = {
   port: 5432,
   database: "requestbin",
   allowExitOnIdle: true,
+  username: config.DB_USERNAME,
+  password: config.DB_PASSWORD,
+  database: config.DB_NAME
 };
 
 const db = pgp(CONNECTION);

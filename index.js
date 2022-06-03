@@ -8,6 +8,7 @@ const app = express();
 const { create } = require('express-handlebars');
 const { PORT } = config;
 const hbs = create({});
+const crypto = require('crypto');
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
@@ -28,26 +29,37 @@ app.get('/', (req, res) => {
   });
 });
 
-// View requests
+// Generate bin
+app.post('/bin', async (req, res) => {
+  const urlHash = crypto.randomBytes(20).toString('hex');
+
+  let store = res.locals.store;
+  const url = '/bin/' + urlHash;
+  await store.createBin(url);
+  res.json(`/bin/view/${urlHash}`);
+});
+
+// View bin
 app.get('/bin/view/:id', async (req, res) => {
   let store = res.locals.store;
   const url = req.originalUrl.slice(0, 5) + req.originalUrl.slice(10);
   let binId = await store.getBinId(url);
 
   if (!binId) {
-    binId = await store.createBin(url);
-  }
-  let requests = await store.getRequests(binId); // get requests for bin from psql
-  const payLoads = await findRequests(binId); // get payloads for bin
-  requests = parseRequests(requests, payLoads); // add payload to requests
-  const binData = await store.loadBin(binId);
+    res.redirect('/');
+  } else {
+    let requests = await store.getRequests(binId); // get requests for bin from psql
+    const payLoads = await findRequests(binId); // get payloads for bin
+    requests = parseRequests(requests, payLoads); // add payload to requests
+    const binData = await store.loadBin(binId);
 
-  res.render('home-bin', {
-    title: 'Your Bins - RequestBinge',
-    url: req.headers.host + url,
-    requests,
-    binData,
-  });
+    res.render('home-bin', {
+      title: 'Your Bins - RequestBinge',
+      url: req.headers.host + url,
+      requests,
+      binData,
+    });
+  }
 });
 
 // Requests from webhook URL

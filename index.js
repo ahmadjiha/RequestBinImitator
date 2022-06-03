@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const db = require('./modules/request-bin-db');
 const express = require('express');
 const exphbs = require('express-handlebars');
-console.log(exphbs)
+const RequestBody = require('./models/request');
 
 const app = express();
 app.use(express.json());
@@ -26,11 +26,48 @@ app.get('/', (req, res) => {
       { request_method: "GET"}
     ]
   })
-})
+});
 
-app.get('/bins/views/:uri', (request, response) => {
+async function queryBin(binUri) {
+  try {
+    const bin = await db.one('SELECT * FROM bins WHERE url = $1', [binUri]);
+    console.log("successfully retrieved bin");
+    return bin;
+  } catch(e) {
+    console.log(e);
+  }
+}
+
+async function queryBinRequests(binId) {
+  try {
+    const requests = await db.any('SELECT * FROM requests WHERE bin_id = $1', [binId]);
+    console.log("Successfully retrieved all requests for the bin");
+    return requests
+  } catch(e) {
+    console.log(e);
+  }
+}
+
+async function queryRequestBody(requestId) {
+  return await RequestBody.findOne({ requestId, });
+}
+
+app.get('/bins/views/:uri', async (request, response) => {
   const binUri = request.params.uri;
-  response.sendFile(`./views/${binUri}.html`, { root: __dirname });
+  const bin = await queryBin(binUri);
+  const requests = await queryBinRequests(bin.id);
+  
+  for (let i = 0; i < requests.length; i += 1) {
+    requests[i].body = await queryRequestBody(requests[i].id);
+    requests[i].body = requests[i].body ? requests[i].body.body : "None";
+  }
+
+  response.render('bin', {
+    binData: bin,
+    requests,
+  });
+
+  // response.sendFile(`./views/${binUri}.html`, { root: __dirname });
 });
 
 // Create a new request bin 
@@ -72,9 +109,6 @@ async function storeNewRequest(cols) {
     console.log(e);
   }
 }
-
-const RequestBody = require('./models/request');
-const { response } = require('express');
 
 // Store a new request
 /*

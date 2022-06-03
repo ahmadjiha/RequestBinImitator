@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <title>Your Bin</title>
+  </head>
+  <body>
+    <!-- Bin Description -->
+    <div>
+      <h1>YOUR BIN</h1>
+      <h2>{{binData.url}}</h2>
+      <p><strong>Supported:</strong> DNS, HTTP</p>
+      <p><strong>Created:</strong> {{binData.date_created}}</p>
+      <p><strong>Last:</strong> {{binData.date_last_used}}</p>
+      <p><strong>Count:</strong> {{requests.length}}</p>
+      <p><strong>Status:</strong> {{binData.active}}</p>
+    </div>
+    <br>
+
+    <!-- Individual Requests -->
+    {{#if requests}}
+      <h2>Requests:</h2>
+
+      {{#each requests}}
+        <div>
+          <p>{{request_method}}</p>
+          <p>{{form/post_parameters}}</p>
+          <p>{{headers}}</p>
+          <p>{{raw_body}}</p>
+          <p>{{content_type}}</p>
+          <p>{{content_length}}</p>
+          <p>{{body_encoding}}</p>
+          <p>{{method_plus_host}}</p>
+          <p>{{received_at}}</p>
+          <p>{{ip_address}}</p>
+          <p><strong>Raw Body:</strong> {{body}}</p>
+        </div>
+        <br>
+      {{/each}}
+    {{/if}}
+  </body>
+</html>

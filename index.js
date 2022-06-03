@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 
+app.use(express.json());
 // Database connection
 const pgp = require('pg-promise')();
 
@@ -25,6 +26,9 @@ app.set('view engine', 'hbs')
 // Crypto for creating a random URL hash
 const crypto = require('crypto');
 
+// Setting up mongodb
+
+const { findRequests, createRequest } = require('./mongo');
 
 // Main home page - displays all bins
 
@@ -38,16 +42,52 @@ app.get('/', (request, response) => {
 // Display a bin resource
 // Note - handle cases where there are no requests yet.
 
+function parseRequests(requests, payLoads) {
+  return requests.map((req, idx) => {
+    return {
+      ...req,
+      headers: JSON.parse(req.headers),
+      payLoad: payLoads[idx].payLoad,
+    };
+  });
+};
+
 app.get('/bins/:binsUrl', (request, response) => {
   const binsUrl = request.params.binsUrl;
 
   console.log(binsUrl)
 
-  db.any(`SELECT * FROM requests r JOIN bins b ON b.id = r.bin_id WHERE b.url = '${binsUrl}'`)
+  db.any(`SELECT r.*, b.date_created FROM requests r JOIN bins b ON b.id = r.bin_id WHERE b.url = '${binsUrl}'`)
     .then(requests => {
-      const binCreatedAt = requests[0] ? requests[0].date_created : null
-      const reqHeaders = requests[0] ? JSON.parse(requests[0].headers) : null
-      response.render('bins', {created_at: binCreatedAt, requests: requests, headers: reqHeaders})
+        // for each request, find all the corresponding payload for it 
+        const binId = requests[0].bin_id;
+
+        findRequests(binId).then(payloads => {
+          console.log(payloads)
+
+          // requests = parseRequests(requests, payloads)
+          requests.map((request, index) => {
+            request.payload = payloads[index] ? payloads[index].payLoad : null
+          })
+
+          const binCreatedAt = requests[0] ? requests[0].date_created : null
+          response.render('bins', {created_at: binCreatedAt, requests: requests})
+        })
+
+
+
+        // .then(bin => {
+        //   const binId = bin[0].id;
+        //   console.log(binId);
+
+        //   return findRequests(binId)
+        // }).then(something => {
+        //   // console.log(something);
+
+        //   const binCreatedAt = requests[0] ? requests[0].date_created : null
+        //   response.render('bins', {created_at: binCreatedAt, requests: requests})
+        // })
+
     })
 })
 
@@ -78,6 +118,8 @@ app.post('/bins/:binsUrl', (request, response) => {
   const contentLength = request.get('content-length');
   const httpMethod = request.method;
   const ipAddress = request.get('x-forwarded-for');
+  const payload = JSON.stringify(request.body) || JSON.stringify({"body":""});
+  // console.log("raw payload", request.body)
 
   db.any(`SELECT id FROM bins WHERE url = '${binsUrl}'`)
     .then(id => {
@@ -86,7 +128,11 @@ app.post('/bins/:binsUrl', (request, response) => {
           (bin_id, ip_address, request_method, headers, received_at, content_type, content_length)\
           VALUES\
           (${binId}, '${ipAddress}', '${httpMethod}', '${JSON.stringify(request.headers)}', now(), '${contentType}', ${contentLength});`)
-    })
+          .then(result => {
+            createRequest(binId, payload) // mongo
+          });
+  })
+
 
   response.status(200).end()
 })

@@ -16,23 +16,20 @@
     <h2>Requests</h2>
 
     <ul>
-      <li>
-        <ul>
-          {{#each requests}}
-          <li>HTTP Method: {{this.request_method}} </li>
-          <li>From: {{this.ip_address}}</li>
-          <li>Received at: {{this.received_at}}</li>
-          {{/each}}
-          <li>
-             Headers:
-            <ul>
-              {{#each headers}}
-              <li>{{@key}}: {{this}}</li>
-              {{/each}}
-            </ul>
-          </li>
-        </ul>
-      </li>
+      {{#each requests}}
+      <div>
+        <hr>
+        <li>
+          <p>{{this.id}}</p>
+          <p>HTTP Method: {{this.request_method}} </p>
+          <p>From: {{this.ip_address}}</p>
+          <p>Received at: {{this.received_at}}</p>
+          <p>Headers: {{this.headers}}</p>
+          <p>Raw payload: {{this.payload}}</p>
+        </li>
+        <hr>
+      </div>
+      {{/each}}
     </ul>
 
   </body>

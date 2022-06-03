@@ -4,12 +4,29 @@ require('dotenv').config();
 const crypto = require('crypto');
 const db = require('./modules/request-bin-db');
 const express = require('express');
+const exphbs = require('express-handlebars');
+console.log(exphbs)
+
 const app = express();
 app.use(express.json());
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World</h1>');
-});
+// Express Handlerbars
+app.engine('handlebars', exphbs.engine());
+app.set('view engine', 'handlebars');
+app.set('views', './views');
+
+// Test Path
+app.get('/', (req, res) => {
+  res.render('bin', { 
+    binData: {
+      bin_address: 'abc'
+    },
+    requests: [
+      { request_method: "POST" },
+      { request_method: "GET"}
+    ]
+  })
+})
 
 app.get('/bins/views/:uri', (request, response) => {
   const binUri = request.params.uri;
@@ -32,16 +49,6 @@ app.post('/bins/views', (request, response) => {
       console.log(error);
     });  
 });
-
-// Store a new request
-/*
-1. Get binID from db
-  a. Query postgres for id that has matching url
-2. Parse request
-3. Store metadata (request method, headers, ip, ...) in postgres
-4. Store raw body string in mongo
-5. Trigger bin view to be rerendered
-*/
 
 async function queryBinId(uri) {
   try {
@@ -67,6 +74,17 @@ async function storeNewRequest(cols) {
 }
 
 const RequestBody = require('./models/request');
+const { response } = require('express');
+
+// Store a new request
+/*
+1. Get binID from db
+  a. Query postgres for id that has matching url
+2. Parse request
+3. Store metadata (request method, headers, ip, ...) in postgres
+4. Store raw body string in mongo
+5. Trigger bin view to be rerendered
+*/
 
 app.post('/api/bins/:uri', async (request, response) => {
   const binUri = request.params.uri;
@@ -90,7 +108,7 @@ app.post('/api/bins/:uri', async (request, response) => {
 
   requestBody.save()
     .then(result => {
-      // rerender bin
+      // rerender bin -- still needs to be implemented
     })
     .catch(error => {
       console.log(error)

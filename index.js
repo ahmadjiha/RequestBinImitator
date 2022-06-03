@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 
+
 app.use(express.json());
 // Database connection
 const pgp = require('pg-promise')();
@@ -29,6 +30,11 @@ const crypto = require('crypto');
 // Setting up mongodb
 
 const { findRequests, createRequest } = require('./mongo');
+
+// Experimenting with sockets
+
+
+// ======== ROUTES / MAIN APP ================
 
 // Main home page - displays all bins
 

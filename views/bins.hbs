@@ -20,11 +20,14 @@
       <div>
         <hr>
         <li>
-          <p>{{this.id}}</p>
           <p>HTTP Method: {{this.request_method}} </p>
           <p>From: {{this.ip_address}}</p>
           <p>Received at: {{this.received_at}}</p>
-          <p>Headers: {{this.headers}}</p>
+          {{!-- <p>Headers: {{this.headers}}</p> --}}
+          <p>Headers: {{#each headers}}
+            <div>{{@key}}: {{this}}</div>
+            {{/each}}
+          </p>
           <p>Raw payload: {{this.payload}}</p>
         </li>
         <hr>

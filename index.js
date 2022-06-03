@@ -42,38 +42,28 @@ app.get('/', (request, response) => {
 // Display a bin resource
 // Note - handle cases where there are no requests yet.
 
-function parseRequests(requests, payLoads) {
-  return requests.map((req, idx) => {
-    return {
-      ...req,
-      headers: JSON.parse(req.headers),
-      payLoad: payLoads[idx].payLoad,
-    };
-  });
-};
-
 app.get('/bins/:binsUrl', (request, response) => {
   const binsUrl = request.params.binsUrl;
-
-  console.log(binsUrl)
 
   db.any(`SELECT r.*, b.date_created FROM requests r JOIN bins b ON b.id = r.bin_id WHERE b.url = '${binsUrl}'`)
     .then(requests => {
         // for each request, find all the corresponding payload for it 
-        const binId = requests[0].bin_id;
+        const binId = requests[0] ? requests[0].bin_id : null;
 
-        findRequests(binId).then(payloads => {
-          console.log(payloads)
-
-          // requests = parseRequests(requests, payloads)
-          requests.map((request, index) => {
-            request.payload = payloads[index] ? payloads[index].payLoad : null
+        if (binId !== null) {
+          findRequests(binId).then(payloads => {
+            requests.map((request, index) => {
+              request.payload = payloads[index] ? payloads[index].payLoad : null;
+              request.headers = JSON.parse(request.headers);
+            })
+  
+            const binCreatedAt = requests[0] ? requests[0].date_created : null
+            response.render('bins', {created_at: binCreatedAt, requests: requests})
           })
-
+        } else {
           const binCreatedAt = requests[0] ? requests[0].date_created : null
           response.render('bins', {created_at: binCreatedAt, requests: requests})
-        })
-
+        }
     })
 })
 
@@ -94,16 +84,15 @@ app.post('/bins', (request, response) => {
 
 app.post('/bins/:binsUrl', (request, response) => {
   const binsUrl = request.params.binsUrl;
-
-  // console.log(binsUrl);
-
-  // console.log('Hello a webhook arrived!')
-  // console.log(typeof request.headers);
+  // console.log('Hello a webhook arrived!');
 
   const contentType = request.get('content-type');
   const contentLength = request.get('content-length');
   const httpMethod = request.method;
   const ipAddress = request.get('x-forwarded-for');
+
+  console.log("request body", request.body)
+  
   const payload = JSON.stringify(request.body) || JSON.stringify({"body":""});
   // console.log("raw payload", request.body)
 

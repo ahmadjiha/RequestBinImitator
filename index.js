@@ -74,20 +74,6 @@ app.get('/bins/:binsUrl', (request, response) => {
           response.render('bins', {created_at: binCreatedAt, requests: requests})
         })
 
-
-
-        // .then(bin => {
-        //   const binId = bin[0].id;
-        //   console.log(binId);
-
-        //   return findRequests(binId)
-        // }).then(something => {
-        //   // console.log(something);
-
-        //   const binCreatedAt = requests[0] ? requests[0].date_created : null
-        //   response.render('bins', {created_at: binCreatedAt, requests: requests})
-        // })
-
     })
 })
 

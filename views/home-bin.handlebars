@@ -1,23 +1,31 @@
-<h1>RequestBin</h1>
-<h2>Your Bin</h2>
-<input id="url" value={{ url }}>
 
-<ul class="requests">
-  {{#if requests}}
-    {{#each requests}}
-      <li>Request: {{this.id}}</li>
-        <ul>
-          <li>Headers:</li>
-              {{#each this.headers}}
-              <ul>
-                <li>{{@key}}: {{this}}</li>
-              </ul>
-              {{/each}}
-          <li>Payload: {{this.payLoad}} </li>
-        </ul>
-    {{/each}}
-    {{else}}
-    <p>Send some requests!</p>
-  {{/if}}
-</ul>
+<div>
+  <article>
+    <h3>Your Bin</h3>
+    <p><b>Request Count: </b>{{ binData.request_count }}</p>
+    <p><b>Created: </b>{{ binData.date_created }}</p>
+    <p><b>Last: </b>{{ binData.date_last_used }}</p>
+    <p><b>Link:</b> <input value={{ url }}></p>
+  </article>
+</div>
 
+{{#if requests}}
+  {{#each requests}}
+  <div class="wrapper">
+    <ul class="requests">
+      <li><b>Request Method: </b>{{ this.request_method }}</li>
+      <li><b>IP Address: </b>{{ this.ip_address }}</li>
+      <li><b>Date: </b>{{ this.received_at }}</li>
+      <li><b>Size: </b>{{ this.content_length }} bytes</li>
+      <li><b>Headers:</b></li>
+          {{#each this.headers}}
+          <ul class="inner">
+            <li><b>{{@key}}</b>: {{this}}</li>
+          </ul>
+          {{/each}}
+      <li><b>Raw Body: </b></li>
+      <li><input id="raw" value={{ this.payLoad }}></li>
+    </ul>
+  </div>
+  {{/each}}
+{{/if}}

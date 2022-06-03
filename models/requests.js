@@ -21,8 +21,6 @@ const requestsSchema = new mongoose.Schema({
   },
 });
 
-const Requests = mongoose.model('Requests', requestsSchema);
-
 requestsSchema.set('toJSON', {
   // virtuals: true,
   transform: (document, returnedObject) => {
@@ -32,5 +30,7 @@ requestsSchema.set('toJSON', {
     delete returnedObject.__v;
   },
 });
+
+const Requests = mongoose.model('Requests', requestsSchema);
 
 module.exports = Requests;

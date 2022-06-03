@@ -1,0 +1,97 @@
+@import url(whitespace-reset.css);
+
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+header {
+  text-align: center;
+  background-image: linear-gradient(to bottom,#1e5610 0,#4ad88f 100%);
+  padding: 20px;
+  color: white;
+}
+
+h1 {
+  font-size: 38px;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 100;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+article {
+  padding: 10px;
+  border-radius: 5px;
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+p {
+  margin-top: 5px;
+}
+
+#link_container {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.url {
+  text-decoration: none;
+  color: #1e5610;
+  background: white;
+  border: 1px solid #1e5610;
+  padding: 15px;
+  border-radius: 10px;
+  display: inline-block;
+  text-align: center;
+}
+
+.url:hover {
+  color: white;
+  background: #1e5610;
+}
+
+#raw {
+  width: 95%;
+}
+
+input {
+  height: 26px;
+  border: 1px solid rgb(168, 167, 167);
+  border-radius: 5px;
+  width: 350px;
+  padding-left: 5px;
+}
+
+
+.requests {
+  margin: 10px;
+}
+
+.wrapper {
+  background-color: whitesmoke;
+  list-style-type: none;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid lightgray;
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.inner {
+  font-size: 13px;
+  margin-left: 15px;
+}
+
